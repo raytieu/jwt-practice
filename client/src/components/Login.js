@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = ({ setAuth }) => {
   const [inputs, setInputs] = useState({
@@ -23,7 +24,14 @@ const Login = ({ setAuth }) => {
         body: JSON.stringify(body),
       });
       const parseRes = await response.json();
-      localStorage.setItem("token", parseRes.token);
+      if (parseRes.jwtToken) {
+        localStorage.setItem("token", parseRes.jwtToken);
+        setAuth(true);
+        toast.success("Logged in Successfully");
+      } else {
+        setAuth(false);
+        toast.error(parseRes);
+      }
 
       setAuth(true);
     } catch (err) {
@@ -45,7 +53,7 @@ const Login = ({ setAuth }) => {
         <input
           type="password"
           name="password"
-          placeholder="email"
+          placeholder="password"
           className="form-control my-3"
           value={password}
           onChange={(e) => onChange(e)}
